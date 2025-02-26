@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Canva plus</title>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Canva Plus</title>
+        <style>
+            body {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                height: 100vh;
+                background-color: #ffffff;
+                font-family: Arial, sans-serif;
+                text-align: center;
+            }
+            h1 {
+                color: black;
+            }
+            canvas {
+                border: 5px solid black;
+                background-color: white;
+            }
+            .loading {
+                margin-top: 10px;
+                font-size: 1.2em;
+            }
+            .progress-container {
+                width: 80%;
+                background-color: #ddd;
+                margin-top: 10px;
+                height: 40px;
+                position: relative;
+                border-radius: 10px;
+                overflow: hidden;
+            }
+            .progress-bar {
+                height: 100%;
+                width: 0%;
+                background-color: green;
+                transition: width 1s;
+                position: absolute;
+            }
+            .runner {
+                position: absolute;
+                width: 30px;
+                height: 30px;
+                top: 50%;
+                transform: translateY(-50%);
+                transition: left 1s;
+            }
+        </style>
+</head>
+<body>
+    <h1>Gateway Time-out when accessing Canva</h1>
+    <canvas id="loadingCanvas" width="600" height="400"></canvas>
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+        <img src="runner1.png" class="runner" id="runner" alt="Running Man">
+    </div>
+    <p class="loading">Currently<br> 15 users are using it simultaneously, causing inconvenience.<br><br> Please understand!<br>
+        The last edited file will be saved and will not be lost. Once the page is restored, you can check the folder.</p>
+
+    <script>
+        const canvas = document.getElementById("loadingCanvas");
+        const ctx = canvas.getContext("2d");
+        let angle = 0;
+        let progress = 0;
+        let runnerIndex = 0;
+        const runnerImages = ["runner1.png", "runner2.png"];
+
+        const background = new Image();
+        background.src = "img_background.webp";
+
+        function drawLoading() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "black";
+            ctx.fillRect(10, 10, canvas.width - 20, canvas.height - 20);
+
+            ctx.save();
+            ctx.translate(canvas.width / 2, canvas.height / 2);
+            ctx.rotate(angle);
+            ctx.drawImage(background, -100, -100, 200, 200);
+            ctx.restore();
+
+            angle += 0.05;
+
+            if (progress < 100) {
+                progress += 0.2;
+                document.getElementById("progressBar").style.width = progress + "%";
+                document.getElementById("runner").style.left = `calc(${progress}% - 15px)`;
+            }
+
+            requestAnimationFrame(drawLoading);
+        }
+
+        function toggleRunnerImage() {
+            runnerIndex = (runnerIndex + 1) % runnerImages.length;
+            document.getElementById("runner").src = runnerImages[runnerIndex];
+        }
+
+        setInterval(toggleRunnerImage, 200);
+
+        background.onload = function() {
+            drawLoading();
+        };
+    </script>
+</body>
+</html>
