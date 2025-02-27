@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Canva Plus</title>
     <style>
         body {
+            /*容器 box 高度100vh flex排版 垂直 置中*/
+            /*背景顏色 白色*/
+            /*字型 Arial sans-serif*/
+            /*文字置中 邊距為 0*/
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -16,22 +19,28 @@
             text-align: center;
             margin: 0;
         }
+        /*文字樣式 文字黑色 大小1.5em 距離邊框 10px*/
         h1 {
             color: black;
             font-size: 1.5em;
             padding: 10px;
         }
+        /*畫布樣式 邊框5px 黑色 背景白色 最大寬度90vw 最大高度50vh*/
         canvas {
             border: 5px solid black;
             background-color: white;
             max-width: 90vw;
             max-height: 50vh;
         }
+
+        /*文字樣式 上方間距10px 字體大小1em 最大寬度90%*/
         .loading {
             margin-top: 10px;
             font-size: 1em;
             max-width: 90%;
         }
+        /*進度條容器樣式*/
+        /*寬度90% 最大寬度600px 背景顏色 灰色 上方間距10px 高度40px 位置相對 圓角10px*/
         .progress-container {
             width: 90%;
             max-width: 600px;
@@ -42,76 +51,106 @@
             border-radius: 10px;
             overflow: hidden;
         }
+        /*高度100% 寬度0% 背景顏色綠色*/
         .progress-bar {
             height: 100%;
             width: 0%;
             background-color: green;
-            transition: width 0.2s;
+
             position: absolute;
         }
+        /*跑者容器樣式*/
+        /*寬度30px 高度30px 置中垂直 移動50%*/
         .runner {
             position: absolute;
             width: 30px;
             height: 30px;
             top: 50%;
             transform: translateY(-50%);
-            transition: left 0.2s;
+
         }
     </style>
 </head>
+
 <body>
-<h1>Gateway Time-out when accessing Canva</h1>
-<canvas id="loadingCanvas" width="600" height="400"></canvas>
-<div class="progress-container">
-    <div class="progress-bar" id="progressBar"></div>
-    <img src="runner1.png" class="runner" id="runner" alt="Running Man">
-</div>
-<p class="loading">Currently, 15 users are using it simultaneously, causing inconvenience. Please understand.<br>
-    The last edited file will be saved and will not be lost. Once the page is restored, you can check the folder.</p>
+    <!--標題文字-->
+    <h1>Gateway Time-out when accessing Canva</h1>
 
-<script>
-    const canvas = document.getElementById("loadingCanvas");
-    const ctx = canvas.getContext("2d");
-    let angle = 0;
-    let progress = 0;
-    let runnerIndex = 0;
-    const runnerImages = ["runner1.png", "runner2.png"];
+    <!--畫布容器-->
+    <!--600*400-->
+    <canvas id="loadingCanvas" width="600" height="400"></canvas>
 
-    const background = new Image();
-    background.src = "img_background.webp";
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+        <img src="runner1.png" class="runner" id="runner" alt="Running Man">
+    </div>
 
-    function drawLoading() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "black";
-        ctx.fillRect(10, 10, canvas.width - 20, canvas.height - 20);
 
-        ctx.save();
-        ctx.translate(canvas.width / 2, canvas.height / 2);
-        ctx.rotate(angle);
-        ctx.drawImage(background, -100, -100, 200, 200);
-        ctx.restore();
+    <!--文字-->
+    <p class="loading">Currently,<br> 15 users are using it simultaneously, causing inconvenience. <br><br>Please understand!<br>
+        The last edited file will be saved and will not be lost. Once the page is restored, you can check the folder.</p>
 
-        angle += 0.05;
+    <script>
+    <!--可以旋轉-->
+        const canvas = document.getElementById("loadingCanvas");
+        const ctx = canvas.getContext("2d");
+        // 設定角度
+        let angle = 0;
+        // 設定進度
+        let progress = 0;
+        // 設定小人跑步索引
+        let runnerIndex = 0;
+        // 設定小人圖片
+        const runnerImages = ["runner1.png", "runner2.png"];
 
-        if (progress < 100) {
-            progress += 0.2;
-            document.getElementById("progressBar").style.width = progress + "%";
-            document.getElementById("runner").style.left = `calc(${progress}% - 15px)`;
+        // 背景圖片
+        const background = new Image();
+        background.src = "img_background.webp";
+
+
+        //讓螢幕可以轉動 小人和進度調往前跑
+        // 畫布大小 10px
+        //畫面要一直重複
+        // 進度條 100%
+        // 小人跑步從左側開始 跟著進度條往前跑
+        // 小人跑步跟進度條要跑很慢
+
+        function drawLoading() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "black";
+            ctx.fillRect(20, 20, canvas.width - 40, canvas.height - 40);
+
+            ctx.save();
+            ctx.translate(canvas.width / 2, canvas.height / 2);
+            ctx.rotate(angle);
+            ctx.drawImage(background, -100, -100, 200, 200);
+            ctx.restore();
+
+            angle += 0.05;
+
+
+            if (progress < 100) {
+                progress += 0.01;
+                document.getElementById("progressBar").style.width = progress + "%";
+                document.getElementById("runner").style.left = `calc(${progress}% - 15px)`;
+            }
+
+            requestAnimationFrame(drawLoading);
         }
 
-        requestAnimationFrame(drawLoading);
-    }
 
-    function toggleRunnerImage() {
-        runnerIndex = (runnerIndex + 1) % runnerImages.length;
-        document.getElementById("runner").src = runnerImages[runnerIndex];
-    }
+        // 小人跑步照片 互相切換
+        function toggleRunnerImage() {
+            runnerIndex = (runnerIndex + 1) % runnerImages.length;
+            document.getElementById("runner").src = runnerImages[runnerIndex];
+        }
 
-    setInterval(toggleRunnerImage, 200);
+        setInterval(toggleRunnerImage, 200);
 
-    background.onload = function() {
-        drawLoading();
-    };
-</script>
+        background.onload = function() {
+            drawLoading();
+        };
+    </script>
 </body>
+
 </html>
